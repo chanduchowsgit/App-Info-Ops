@@ -11,7 +11,7 @@ pipeline {
    stages {
       stage('SCM') {
          steps {
-            git 'https://github.com/bhavya633/app-info-project.git'
+            git 'https://github.com/chanduchowsgit/App-Info-Ops.git'
          }
       }
       stage('build') {
