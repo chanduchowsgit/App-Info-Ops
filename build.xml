@@ -7,8 +7,8 @@
     <property name="artifact.dir" location="install" />
     <property name="archive.app" location="tar" />
     <property name="docker.app" location="docker" />
-    <property name="bucket.name" value="s3://bhavya-app-info/" />
-    <property name="docker.image" value="bhavya633/app-info" />
+    <property name="bucket.name" value="s3://chandu-app-info/" />
+    <property name="docker.image" value="chandu4/app-info" />
     <property name="version" value="1.0" />
 
     <!-- Deletes the existing build, docs and dist directory-->
@@ -58,9 +58,7 @@
     </target>
 
     <!--Creating docker image-->
-    <target name="create-docker-stage">
-        <mkdir dir="${docker.app}/install" />
-    </target>
+    
 
     <target name="copy-artifacts-to-docker-stage" >
         <copy todir="${docker.app}/install">
