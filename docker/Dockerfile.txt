@@ -1,0 +1,17 @@
+FROM adoptopenjdk:11-jre-hotspot
+
+LABEL version="1.0"
+
+ENV APP_HOME="/opt/app"
+
+RUN mkdir $APP_HOME
+
+COPY install/ $APP_HOME
+
+RUN chmod +x $APP_HOME/**/*.sh
+
+EXPOSE 8080
+
+WORKDIR $APP_HOME/bin
+
+CMD ["./catalina.sh", "run"]

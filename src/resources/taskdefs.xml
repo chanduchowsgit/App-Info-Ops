@@ -1,0 +1,7 @@
+<antlib>
+
+    <taskdef name="create-s3-bucket" classname="com.amazonaws.ant.s3.CreateS3BucketTask" />
+    <taskdef name="upload-to-s3" classname="com.amazonaws.ant.s3.UploadFileSetToS3Task" />
+    <taskdef name="download-from-s3" classname="com.amazonaws.ant.s3.DownloadFileFromS3Task" />
+    
+</antlib>

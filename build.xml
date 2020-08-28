@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<project name="App-Info" default="main" basedir=".">
+    <!-- Sets variables which can later be used. -->
+    <!-- The value of a property is accessed via ${} -->
+    <property name="install.dir" location="tomcat" />
+    <property name="build.dir" location="target" />
+    <property name="artifact.dir" location="install" />
+    <property name="archive.app" location="tar" />
+    <property name="docker.app" location="docker" />
+    <property name="bucket.name" value="s3://bhavya-app-info/" />
+    <property name="docker.image" value="bhavya633/app-info" />
+    <property name="version" value="1.0" />
+
+    <!-- Deletes the existing build, docs and dist directory-->
+    <target name="clean">
+        <delete dir="${artifact.dir}" />
+    </target>
+
+    <!-- Creates the artifact dir directory-->
+    <target name="makedir">
+        <mkdir dir="${artifact.dir}" />
+    </target>
+
+    <target name="copy-artifacts" depends="makedir">
+        <description>Copying the artifacts </description>
+        <copy todir="${artifact.dir}">
+            <fileset dir="${install.dir}">
+              <include name="**" />
+            </fileset>
+        </copy>
+       <copy todir="${artifact.dir}/webapps">
+            <fileset dir="${build.dir}">
+              <include name="App-Info-release/**" />
+            </fileset>
+        </copy>
+
+    </target>
+
+    <!-- Make artifacts directory-->
+    <target name="make-archive-app" depends="copy-artifacts">
+        <mkdir dir="${archive.app}" />
+    </target>
+
+    <!-- Archive war file-->
+    <target name="archive-artifacts" depends="make-archive-app">
+        <tar destfile="${archive.app}/App-Info.tar" basedir="${artifact.dir}" />
+        <gzip destfile="${archive.app}/App-Info.tar.gz" src="${archive.app}/App-Info.tar" />
+    </target>
+
+    <!--copying artifacts to s3-->
+    <target name="upload-s3" depends="archive-artifacts">
+        <exec dir="${archive.app}" executable="aws">
+             <arg value="s3" />
+             <arg value="cp" />
+             <arg value="App-Info.tar.gz" />
+             <arg value="${bucket.name}" />
+        </exec>
+    </target>
+
+    <!--Creating docker image-->
+    <target name="create-docker-stage">
+        <mkdir dir="${docker.app}/install" />
+    </target>
+
+    <target name="copy-artifacts-to-docker-stage" >
+        <copy todir="${docker.app}/install">
+            <fileset dir="${artifact.dir}/" />
+        </copy>
+    </target>
+
+    <target name="docker-image" depends="copy-artifacts-to-docker-stage">
+        <exec dir="${docker.app}" executable="docker">
+            <arg value="build"/>
+            <arg value="-t" />
+            <arg value="${docker.image}:${version}" />
+            <arg value="."/>
+        </exec>
+    </target>
+
+    <target name="docker-push" depends="docker-image">
+        <exec dir="${docker.app}" executable="docker">
+            <arg value="push" />
+            <arg value="${docker.image}:${version}" />
+        </exec>
+    </target>
+
+    <!-- Deletes the existing build, docs and dist directory-->
+    <target name="all-clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+</project>
